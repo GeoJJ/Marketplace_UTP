@@ -1,9 +1,0 @@
-com\utp\marketplace\MarketplaceApplication.class
-com\utp\marketplace\repository\ProductoRepository.class
-com\utp\marketplace\config\SecurityConfig.class
-com\utp\marketplace\controller\ProductoController.class
-com\utp\marketplace\MarketplaceApplication$1.class
-com\utp\marketplace\repository\UsuarioRepository.class
-com\utp\marketplace\model\Usuario.class
-com\utp\marketplace\controller\UsuarioController.class
-com\utp\marketplace\model\Producto.class
