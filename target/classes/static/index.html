@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>UTP Marketplace | El mercado oficial de la UTP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body class="font-sans text-gray-900">
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-200">
+        <nav class="flex justify-between items-center w-full px-6 lg:px-10 max-w-7xl mx-auto h-20">
+            <div class="flex items-center gap-8">
+                <a class="text-2xl font-bold text-red-700" href="index.html">UTP Marketplace</a>
+                <div class="hidden md:flex items-center gap-6 text-gray-600 font-medium">
+                    <a href="catalogo.html" class="hover:text-red-700">Catálogo</a>
+                    <a href="catalogo.html?categoria=Libros" class="hover:text-red-700">Libros</a>
+                    <a href="catalogo.html?categoria=Electrónica" class="hover:text-red-700">Electrónica</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="document.getElementById('modalRegistro').classList.remove('hidden')" class="p-2 text-gray-600 hover:text-red-700">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="py-20 px-6 bg-gray-50">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold mb-4 inline-block">COMUNIDAD UNIVERSITARIA</span>
+                    <h1 class="text-5xl font-bold mb-6 leading-tight">De estudiantes para estudiantes. <span class="text-red-700">El mercado oficial de la UTP.</span></h1>
+                    <p class="text-lg text-gray-600 mb-8">Compra y vende libros, gadgets y servicios académicos de forma segura dentro de tu campus.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 px-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="h-8 w-2 bg-red-700"></div>
+                <h2 class="text-2xl font-bold">Productos Destacados</h2>
+            </div>
+            
+            <div id="contenedor-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <p class="text-gray-500">Cargando productos...</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalRegistro" class="hidden fixed inset-0 z-[100] bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+            <h2 class="text-xl font-bold mb-6">Crear Cuenta</h2>
+            <form id="registroForm" class="flex flex-col gap-4">
+                <input type="text" id="nombre" placeholder="Nombre completo" class="w-full p-3 border rounded" required>
+                <input type="email" id="email" placeholder="Correo UTP" class="w-full p-3 border rounded" required>
+                <input type="password" id="password" placeholder="Contraseña" class="w-full p-3 border rounded" required>
+                <button type="submit" class="bg-red-700 text-white p-3 rounded font-bold">Registrarse</button>
+                <button type="button" onclick="document.getElementById('modalRegistro').classList.add('hidden')" class="text-sm text-gray-500 underline">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. Cargar productos dinámicamente
+        fetch('/api/productos')
+            .then(response => response.json())
+            .then(data => {
+                const contenedor = document.getElementById('contenedor-productos');
+                contenedor.innerHTML = ''; 
+                data.forEach(producto => {
+                    contenedor.innerHTML += `
+                        <div class="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white">
+                            <img src="${producto.imagen}" alt="${producto.nombre}" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <p class="text-sm text-gray-500 mb-1">${producto.categoria}</p>
+                                <h3 class="font-bold text-lg mb-3">${producto.nombre}</h3>
+                                <span class="text-red-700 font-bold text-xl">S/ ${producto.precio.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => {
+                document.getElementById('contenedor-productos').innerHTML = '<p>Error al cargar productos.</p>';
+            });
+
+        // 2. Manejar el envío del formulario de registro
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const usuario = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            fetch('/api/auth/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('¡Registro exitoso!');
+                    document.getElementById('modalRegistro').classList.add('hidden');
+                } else {
+                    alert('Error en el registro.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
